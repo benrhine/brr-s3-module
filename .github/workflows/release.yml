@@ -20,10 +20,13 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: main-${{ github.sha }}
-          name: Release main-${{ github.sha }}
+          tag_name: 'v0.0.1.${{ github.run_number }}'
+          name: 'Release v0.0.1.${{ github.run_number }}'
           generate_release_notes: false
           prerelease: true
           files: |
             dist/**
             build/*.zip
+            
+
+##          name: 'v0.0.1.${{ github.run_number }}'
