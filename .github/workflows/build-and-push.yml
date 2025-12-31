@@ -1,19 +1,19 @@
+##
+#name: Build and release Terraform module
 #
-name: Build and release Terraform module
-
-on:
-  push:
-    tags:
-      - 'v*.*.*.*'
-  pull_request:
-  workflow_dispatch:
-
-env:
-  VALIDATE_YAML: ${{ vars.VALIDATE_YAML }}  #Boolean for whether the linter should validate yaml files
-  VALIDATE_DOCKERFILE: ${{ vars.VALIDATE_DOCKERFILE }}  #Boolean for whether the linter should validate dockerfiles
-  VERSION_SCHEME: ${{ vars.VERSION_SCHEME }}  #Version scheme for predicting release number (ex. conventional_commits)
-
-jobs:
+#on:
+#  push:
+#    tags:
+#      - 'v*.*.*.*'
+#  pull_request:
+#  workflow_dispatch:
+#
+#env:
+#  VALIDATE_YAML: ${{ vars.VALIDATE_YAML }}  #Boolean for whether the linter should validate yaml files
+#  VALIDATE_DOCKERFILE: ${{ vars.VALIDATE_DOCKERFILE }}  #Boolean for whether the linter should validate dockerfiles
+#  VERSION_SCHEME: ${{ vars.VERSION_SCHEME }}  #Version scheme for predicting release number (ex. conventional_commits)
+#
+#jobs:
 #  run-linters:
 #    runs-on: ubuntu-latest
 #
@@ -95,24 +95,24 @@ jobs:
 #          build-args: |
 #            SKIP_GIT_HOOKS_ENFORCE=true
 
-  release:
-#    needs: predict-release-number
-    if: ${{ github.ref_name == 'main' }}
-    runs-on: ubuntu-latest
-
-    permissions:
-      contents: write
-
-    steps:
-      - uses: actions/checkout@v5
-        with:
-            fetch-depth: 0
-      - name: Create a Release
-        uses: ncipollo/release-action@v1.20.0
-        id: release
-        with:
-          generateReleaseNotes: 'false'
-#          name: 'v0.0.1.${{ github.run_number }}'
-          name: 'v${{ github.ref_name }}'
-#          tag: ${{ needs.predict-release-number.outputs.v-version }}
-          token: ${{ secrets.GITHUB_TOKEN }}
+#  release:
+##    needs: predict-release-number
+#    if: ${{ github.ref_name == 'main' }}
+#    runs-on: ubuntu-latest
+#
+#    permissions:
+#      contents: write
+#
+#    steps:
+#      - uses: actions/checkout@v5
+#        with:
+#            fetch-depth: 0
+#      - name: Create a Release
+#        uses: ncipollo/release-action@v1.20.0
+#        id: release
+#        with:
+#          generateReleaseNotes: 'false'
+##          name: 'v0.0.1.${{ github.run_number }}'
+#          name: 'v${{ github.ref_name }}'
+##          tag: ${{ needs.predict-release-number.outputs.v-version }}
+#          token: ${{ secrets.GITHUB_TOKEN }}
