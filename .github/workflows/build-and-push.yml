@@ -1,10 +1,10 @@
 #
-name: Build and push docker image to github packages
+name: Build and release Terraform module
 
 on:
   push:
-    tags:
-      - 'v*.*.*.*'
+#    tags:
+#      - 'v*.*.*.*'
   pull_request:
   workflow_dispatch:
 
@@ -112,6 +112,7 @@ jobs:
         id: release
         with:
           generateReleaseNotes: 'false'
-          name: 'v${{ github.ref_name }}'
+          name: 'v0.0.1.${{ github.run_number }}'
+#          name: 'v${{ github.ref_name }}'
 #          tag: ${{ needs.predict-release-number.outputs.v-version }}
           token: ${{ secrets.GITHUB_TOKEN }}
