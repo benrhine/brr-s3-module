@@ -1,0 +1,117 @@
+#
+name: Build and push docker image to github packages
+
+on:
+  push:
+    tags:
+      - 'v*.*.*.*'
+  pull_request:
+  workflow_dispatch:
+
+env:
+  VALIDATE_YAML: ${{ vars.VALIDATE_YAML }}  #Boolean for whether the linter should validate yaml files
+  VALIDATE_DOCKERFILE: ${{ vars.VALIDATE_DOCKERFILE }}  #Boolean for whether the linter should validate dockerfiles
+  VERSION_SCHEME: ${{ vars.VERSION_SCHEME }}  #Version scheme for predicting release number (ex. conventional_commits)
+
+jobs:
+#  run-linters:
+#    runs-on: ubuntu-latest
+#
+#    permissions:
+#      contents: read
+#      packages: read
+#      # To report GitHub Actions status checks
+#      statuses: write
+#
+#    steps:
+#      - name: Checkout code
+#        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+#        with:
+#          # super-linter needs the full git history to get the
+#          # list of files that changed across commits
+#          fetch-depth: 0
+#      # https://github.com/super-linter/super-linter
+#      - name: Super-linter
+#        uses: super-linter/super-linter@12150456a73e248bdc94d0794898f94e23127c88
+#        env:
+#          # To report GitHub Actions status checks
+#          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN  }}
+#          VALIDATE_YAML: ${{ env.VALIDATE_YAML }}
+#          VALIDATE_DOCKERFILE_HADOLINT: ${{ env.VALIDATE_DOCKERFILE }}
+#          VALIDATE_CHECKOV: false
+#          VALIDATE_MARKDOWN: false
+#          VALIDATE_MARKDOWN_PRETTIER: false
+#          VALIDATE_JSCPD: false
+#          VALIDATE_JAVA: false
+#          VALIDATE_GOOGLE_JAVA_FORMAT: false
+#          VALIDATE_GROOVY: false
+#          VALIDATE_SHELL_SHFMT: false
+##          VALIDATE_YAML: true
+#          VALIDATE_YAML_PRETTIER: false
+
+#  predict-release-number:
+#    runs-on: ubuntu-latest
+#
+#    permissions:
+#      contents: read
+#
+#    outputs:
+#      v-version: ${{ steps.version.outputs.v-version }}
+#      version: ${{ steps.version.outputs.version }}
+#
+#    steps:
+#    - name: Checkout code
+#      uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+#      with:
+#        fetch-depth: 0
+#
+#    - name: Get next version
+#      uses: company/dp-actions-version-increment@v1.2
+#      id: version
+#      with:
+#        scheme: ${{ env.VERSION_SCHEME }}
+#        token: ${{ secrets.GITHUB_TOKEN }}
+
+#  docker-build-and-publish:
+#    needs: [predict-release-number]
+#    runs-on: ubuntu-latest
+#
+#    permissions:
+#      contents: write
+#      packages: write
+#      attestations: write
+#      id-token: write
+#
+#    steps:
+#      - name: Build docker artifact and publish to github packages
+#        uses: company/dp-actions-docker-build-publish@v1.7
+#        id: docker-build-publish
+#        with:
+#          version-scheme: semver
+#          version: ${{ needs.predict-release-number.outputs.v-version }}
+#          image-name: ${{ github.repository }}
+#          registry: ghcr.io
+#          token: ${{ secrets.GITHUB_TOKEN }}
+#          build-args: |
+#            SKIP_GIT_HOOKS_ENFORCE=true
+
+  release:
+#    needs: predict-release-number
+    if: ${{ github.ref_name == 'main' }}
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v5
+        with:
+            fetch-depth: 0
+      - name: Create a Release
+        uses: ncipollo/release-action@v1.20.0
+        id: release
+        with:
+          generateReleaseNotes: 'false'
+          name: 'v${{ github.ref_name }}'
+#          tag: ${{ needs.predict-release-number.outputs.v-version }}
+          token: ${{ secrets.GITHUB_TOKEN }}
