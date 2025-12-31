@@ -1,17 +1,29 @@
 
-name: Build and release Terraform module
+name: Create Release on Main Push
 
 on:
   push:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
-  release-on-push:
+  release:
     runs-on: ubuntu-latest
-    env:
-      GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
     steps:
-      - uses: rymndhng/release-on-push-action@master
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
         with:
-          bump_version_scheme: patch
+          tag_name: main-${{ github.sha }}
+          name: Release main-${{ github.sha }}
+          generate_release_notes: false
+          prerelease: true
+          files: |
+            dist/**
+            build/*.zip
